@@ -4,10 +4,10 @@ ROOT=$PWD
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-PURPLE='\033[0;95m'
-BLUE='\033[0;94m'
-YELLOW='\033[0;33m'
-CYAN='\033[0;36m'
+ORANGE='\033[0;38;5;214m'   
+TEAL='\033[0;38;5;37m'      
+LIGHT_BLUE='\033[0;38;5;45m' 
+MINT='\033[0;38;5;81m'      
 BOLD='\033[1m'
 NC='\033[0m'
 
@@ -37,17 +37,17 @@ BIG_SWARM_CONTRACT="0x6947c6E196a48B77eFa9331EC1E3e45f3Ee5Fd58"
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
   if command -v apt &>/dev/null; then
-    echo -e "${CYAN}${BOLD}[✓] Debian/Ubuntu detected. Installing build-essential, gcc, g++...${NC}"
+    echo -e "${MINT}${BOLD}[✓] Debian/Ubuntu detected. Installing build-essential, gcc, g++...${NC}"
     sudo apt update > /dev/null 2>&1
     sudo apt install -y build-essential gcc g++ > /dev/null 2>&1
 
   elif command -v yum &>/dev/null; then
-    echo -e "${CYAN}${BOLD}[✓] RHEL/CentOS detected. Installing Development Tools...${NC}"
+    echo -e "${MINT}${BOLD}[✓] RHEL/CentOS detected. Installing Development Tools...${NC}"
     sudo yum groupinstall -y "Development Tools" > /dev/null 2>&1
     sudo yum install -y gcc gcc-c++ > /dev/null 2>&1
 
   elif command -v pacman &>/dev/null; then
-    echo -e "${CYAN}${BOLD}[✓] Arch Linux detected. Installing base-devel...${NC}"
+    echo -e "${MINT}${BOLD}[✓] Arch Linux detected. Installing base-devel...${NC}"
     sudo pacman -Sy --noconfirm base-devel gcc > /dev/null 2>&1
 
   else
@@ -56,7 +56,7 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
   fi
 
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-  echo -e "${CYAN}${BOLD}[✓] macOS detected. Installing Xcode Command Line Tools...${NC}"
+  echo -e "${MINT}${BOLD}[✓] macOS detected. Installing Xcode Command Line Tools...${NC}"
   xcode-select --install > /dev/null 2>&1
 
 else
@@ -66,17 +66,17 @@ fi
 
 if command -v gcc &>/dev/null; then
   export CC=$(command -v gcc)
-  echo -e "${CYAN}${BOLD}[✓] Exported CC=$CC${NC}"
+  echo -e "${MINT}${BOLD}[✓] Exported CC=$CC${NC}"
 else
   echo -e "${RED}${BOLD}[✗] gcc not found. Please install it manually.${NC}"
 fi
 
 # CPU-only
-echo -e "\n${YELLOW}${BOLD}[✓] Running in CPU-only mode${NC}"
+echo -e "\n${ORANGE}${BOLD}[✓] Running in CPU-only mode${NC}"
 
 while true; do
     # Prompt the user
-    echo -e "\n\033[36m\033[1mPlease select a swarm to join:\n[A] Math\n[B] Math Hard\033[0m"
+    echo -e "\n\033[38;5;81m\033[1mPlease select a swarm to join:\n[A] Math\n[B] Math Hard\033[0m"
     read -p "> " ab
     ab=${ab:-A}  # Default to "A" if Enter is pressed
 
@@ -94,7 +94,7 @@ else
 fi
 
 while true; do
-    echo -e "\n\033[36m\033[1mHow many parameters (in billions)? [0.5, 1.5, 7, 32, 72]\033[0m"
+    echo -e "\n\033[38;5;81m\033[1mHow many parameters (in billions)? [0.5, 1.5, 7, 32, 72]\033[0m"
     read -p "> " pc
     pc=${pc:-0.5}  # Default to "0.5" if the user presses Enter
 
@@ -105,7 +105,7 @@ while true; do
 done
 
 cleanup() {
-    echo -e "${YELLOW}${BOLD}[✓] Shutting down processes...${NC}"
+    echo -e "${ORANGE}${BOLD}[✓] Shutting down processes...${NC}"
     kill $SERVER_PID 2>/dev/null || true
     kill $TUNNEL_PID 2>/dev/null || true
     exit 0
@@ -113,8 +113,7 @@ cleanup() {
 
 trap cleanup INT
 
-echo -e "\033[38;5;45m\033[1m"  
-# echo -e "\033[38;5;224m"
+echo -e "\033[38;5;37m\033[1m"  
 cat << "EOF"
            _         _                   _   _           _      
      /\   (_)       | |                 | \ | |         | |     
@@ -137,12 +136,12 @@ sleep 2
 if [ -f "modal-login/temp-data/userData.json" ]; then
     cd modal-login
 
-    echo -e "\n${CYAN}${BOLD}[✓] Installing dependencies with npm. This may take a few minutes, depending on your internet speed...${NC}"
+    echo -e "\n${MINT}${BOLD}[✓] Installing dependencies with npm. This may take a few minutes, depending on your internet speed...${NC}"
     npm install --legacy-peer-deps
     
-    echo -e "\n${CYAN}${BOLD}[✓] Starting the development server...${NC}"
+    echo -e "\n${MINT}${BOLD}[✓] Starting the development server...${NC}"
     if ! command -v ss &>/dev/null; then
-      echo -e "${YELLOW}[!] 'ss' not found. Attempting to install 'iproute2'...${NC}"
+      echo -e "${ORANGE}[!] 'ss' not found. Attempting to install 'iproute2'...${NC}"
       if command -v apt &>/dev/null; then
         sudo apt update && sudo apt install -y iproute2
       elif command -v yum &>/dev/null; then
@@ -159,7 +158,7 @@ if [ -f "modal-login/temp-data/userData.json" ]; then
     if [ -n "$PORT_LINE" ]; then
       PID=$(echo "$PORT_LINE" | grep -oP 'pid=\K[0-9]+')
       if [ -n "$PID" ]; then
-        echo -e "${YELLOW}[!] Port 3000 is in use. Killing process: $PID${NC}"
+        echo -e "${ORANGE}[!] Port 3000 is in use. Killing process: $PID${NC}"
         kill -9 $PID
         sleep 2
       fi
@@ -193,12 +192,12 @@ if [ -f "modal-login/temp-data/userData.json" ]; then
 else
     cd modal-login
 
-    echo -e "\n${CYAN}${BOLD}[✓] Installing dependencies with npm. This may take a few minutes, depending on your internet speed...${NC}"
+    echo -e "\n${MINT}${BOLD}[✓] ORG_ID has been set to: ${BOLD}$ORG_ID\n${NC}"
     npm install --legacy-peer-deps
     
-    echo -e "\n${CYAN}${BOLD}[✓] Starting the development server...${NC}"
+    echo -e "\n${MINT}${BOLD}[✓] Starting the development server...${NC}"
     if ! command -v ss &>/dev/null; then
-      echo -e "${YELLOW}[!] 'ss' not found. Attempting to install 'iproute2'...${NC}"
+      echo -e "${ORANGE}[!] 'ss' not found. Attempting to install 'iproute2'...${NC}"
       if command -v apt &>/dev/null; then
         sudo apt update && sudo apt install -y iproute2
       elif command -v yum &>/dev/null; then
@@ -215,7 +214,7 @@ else
     if [ -n "$PORT_LINE" ]; then
       PID=$(echo "$PORT_LINE" | grep -oP 'pid=\K[0-9]+')
       if [ -n "$PID" ]; then
-        echo -e "${YELLOW}[!] Port 3000 is in use. Killing process: $PID${NC}"
+        echo -e "${ORANGE}[!] Port 3000 is in use. Killing process: $PID${NC}"
         kill -9 $PID
         sleep 2
       fi
@@ -242,7 +241,7 @@ else
         exit 1
     fi
 
-    echo -e "\n${CYAN}${BOLD}[✓] Detecting system architecture...${NC}"
+    echo -e "\n${MINT}${BOLD}[✓] Detecting system architecture...${NC}"
     ARCH=$(uname -m)
     OS=$(uname -s | tr '[:upper:]' '[:lower:]')
     if [ "$ARCH" = "x86_64" ]; then
@@ -283,7 +282,7 @@ else
             echo -e "${GREEN}${BOLD}[✓] Localtunnel is already installed.${NC}"
             return 0
         fi
-        echo -e "\n${CYAN}${BOLD}[✓] Installing localtunnel...${NC}"
+        echo -e "\n${MINT}${BOLD}[✓] Installing localtunnel...${NC}"
         npm install -g localtunnel > /dev/null 2>&1
         if [ $? -eq 0 ]; then
             echo -e "${GREEN}${BOLD}[✓] Localtunnel installed successfully.${NC}"
@@ -299,7 +298,7 @@ else
             echo -e "${GREEN}${BOLD}[✓] Cloudflared is already installed.${NC}"
             return 0
         fi
-        echo -e "\n${YELLOW}${BOLD}[✓] Installing cloudflared...${NC}"
+        echo -e "\n${ORANGE}${BOLD}[✓] Installing cloudflared...${NC}"
         CF_URL="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-$CF_ARCH"
         wget -q --show-progress "$CF_URL" -O cloudflared
         if [ $? -ne 0 ]; then
@@ -321,7 +320,7 @@ else
             echo -e "${GREEN}${BOLD}[✓] ngrok is already installed.${NC}"
             return 0
         fi
-        echo -e "${YELLOW}${BOLD}[✓] Installing ngrok...${NC}"
+        echo -e "${ORANGE}${BOLD}[✓] Installing ngrok...${NC}"
         NGROK_URL="https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-$OS-$NGROK_ARCH.tgz"
         wget -q --show-progress "$NGROK_URL" -O ngrok.tgz
         if [ $? -ne 0 ]; then
@@ -346,9 +345,9 @@ else
     }
 
     try_localtunnel() {
-        echo -e "\n${CYAN}${BOLD}[✓] Trying localtunnel...${NC}"
+        echo -e "\n${MINT}${BOLD}[✓] Trying localtunnel...${NC}"
         if install_localtunnel; then
-            echo -e "\n${CYAN}${BOLD}[✓] Starting localtunnel on port $PORT...${NC}"
+            echo -e "\n${MINT}${BOLD}[✓] Starting localtunnel on port $PORT...${NC}"
             TUNNEL_TYPE="localtunnel"
             lt --port $PORT > localtunnel_output.log 2>&1 &
             TUNNEL_PID=$!
@@ -370,9 +369,9 @@ else
     }
 
     try_cloudflared() {
-        echo -e "\n${CYAN}${BOLD}[✓] Trying cloudflared...${NC}"
+        echo -e "\n${MINT}${BOLD}[✓] Trying cloudflared...${NC}"
         if install_cloudflared; then
-            echo -e "\n${CYAN}${BOLD}[✓] Starting cloudflared tunnel...${NC}"
+            echo -e "\n${MINT}${BOLD}[✓] Starting cloudflared tunnel...${NC}"
             TUNNEL_TYPE="cloudflared"
             cloudflared tunnel --url http://localhost:$PORT > cloudflared_output.log 2>&1 &
             TUNNEL_PID=$!
@@ -383,7 +382,7 @@ else
                 CLOUDFLARED_URL=$(grep -o 'https://[^ ]*\.trycloudflare.com' cloudflared_output.log | head -n1)
                 if [ -n "$CLOUDFLARED_URL" ]; then
                     echo -e "${GREEN}${BOLD}[✓] Cloudflared tunnel is started successfully.${NC}"
-                    echo -e "\n${CYAN}${BOLD}[✓] Checking if cloudflared URL is working...${NC}"
+                    echo -e "\n${MINT}${BOLD}[✓] Checking if cloudflared URL is working...${NC}"
                     if check_url "$CLOUDFLARED_URL"; then
                         FORWARDING_URL="$CLOUDFLARED_URL"
                         return 0
@@ -427,11 +426,11 @@ else
     }
 
     try_ngrok() {
-        echo -e "\n${CYAN}${BOLD}[✓] Trying ngrok...${NC}"
+        echo -e "\n${MINT}${BOLD}[✓] Trying ngrok...${NC}"
         if install_ngrok; then
             TUNNEL_TYPE="ngrok"
             while true; do
-                echo -e "\n${YELLOW}${BOLD}To get your authtoken:${NC}"
+                echo -e "\n${ORANGE}${BOLD}To get your authtoken:${NC}"
                 echo "1. Sign up or log in at https://dashboard.ngrok.com"
                 echo "2. Go to 'Your Authtoken' section: https://dashboard.ngrok.com/get-started/your-authtoken"
                 echo "3. Click on the eye icon to reveal your ngrok auth token"
@@ -455,7 +454,7 @@ else
                 fi
             done
 
-            echo -e "\n${CYAN}${BOLD}[✓] Starting ngrok with method 1...${NC}"
+            echo -e "\n${MINT}${BOLD}[✓] Starting ngrok with method 1...${NC}"
             ngrok http "$PORT" --log=stdout --log-format=json > ngrok_output.log 2>&1 &
             TUNNEL_PID=$!
             sleep 5
@@ -469,7 +468,7 @@ else
                 kill $TUNNEL_PID 2>/dev/null || true
             fi
 
-            echo -e "\n${CYAN}${BOLD}[✓] Starting ngrok with method 2...${NC}"
+            echo -e "\n${MINT}${BOLD}[✓] Starting ngrok with method 2...${NC}"
             ngrok http "$PORT" > ngrok_output.log 2>&1 &
             TUNNEL_PID=$!
             sleep 5
@@ -483,7 +482,7 @@ else
                 kill $TUNNEL_PID 2>/dev/null || true
             fi
 
-            echo -e "\n${CYAN}${BOLD}[✓] Starting ngrok with method 3...${NC}"
+            echo -e "\n${MINT}${BOLD}[✓] Starting ngrok with method 3...${NC}"
             ngrok http "$PORT" --log=stdout > ngrok_output.log 2>&1 &
             TUNNEL_PID=$!
             sleep 5
@@ -518,10 +517,10 @@ else
     start_tunnel
     if [ $? -eq 0 ]; then
         if [ "$TUNNEL_TYPE" != "localtunnel" ]; then
-            echo -e "${GREEN}${BOLD}[✓] Success! Please visit this website and log in using your email:${NC} ${CYAN}${BOLD}${FORWARDING_URL}${NC}"
+            echo -e "${GREEN}${BOLD}[✓] Success! Please visit this website and log in using your email:${NC} ${MINT}${BOLD}${FORWARDING_URL}${NC}"
         fi
     else
-        echo -e "\n${BLUE}${BOLD}[✓] Don't worry, you can use this manual method. Please follow these instructions:${NC}"
+        echo -e "\n${LIGHT_BLUE}${BOLD}[✓] Don't worry, you can use this manual method. Please follow these instructions:${NC}"
         echo "1. Open this same WSL/VPS or GPU server on another tab"
         echo "2. Paste this command into this terminal: ngrok http $PORT"
         echo "3. It will show a link similar to this: https://xxxx.ngrok-free.app"
@@ -531,7 +530,7 @@ else
 
     cd ..
 
-    echo -e "\n${CYAN}${BOLD}[↻] Waiting for you to complete the login process...${NC}"
+    echo -e "\n${MINT}${BOLD}[↻] Waiting for you to complete the login process...${NC}"
     while [ ! -f "modal-login/temp-data/userData.json" ]; do
         sleep 3
     done
@@ -540,9 +539,8 @@ else
     rm -f server.log localtunnel_output.log cloudflared_output.log ngrok_output.log
 
     ORG_ID=$(awk 'BEGIN { FS = "\"" } !/^[ \t]*[{}]/ { print $(NF - 1); exit }' modal-login/temp-data/userData.json)
-    echo -e "\n${CYAN}${BOLD}[✓] ORG_ID has been set to: $ORG_ID\n${NC}"
-
-    echo -e "${CYAN}${BOLD}[✓] Waiting for API key to become activated...${NC}"
+    echo -e "\n${MINT}${BOLD}[✓] ORG_ID has been set to: $ORG_ID\n${NC}"
+    echo -e "${MINT}${BOLD}[✓] Waiting for API key to become activated...${NC}"
     while true; do
         STATUS=$(curl -s "http://localhost:3000/api/get-api-key-status?orgId=$ORG_ID")
         if [[ "$STATUS" == "activated" ]]; then
@@ -564,17 +562,17 @@ else
     fi
 fi
 
-echo -e "${CYAN}${BOLD}[✓] Setting up Python virtual environment...${NC}"
+echo -e "${MINT}${BOLD}[✓] Setting up Python virtual environment...${NC}"
 python3 -m venv .venv && . .venv/bin/activate && \
 echo -e "${GREEN}${BOLD}[✓] Python virtual environment set up successfully.${NC}" || \
 echo -e "${RED}${BOLD}[✗] Failed to set up virtual environment.${NC}"
 
-# Luôn sử dụng config CPU và cài đặt requirements-cpu.txt
-echo -e "${YELLOW}${BOLD}[✓] Using CPU configuration${NC}"
+# requirements-cpu.txt
+echo -e "${ORANGE}${BOLD}[✓] Using CPU configuration${NC}"
 pip install -r "$ROOT"/requirements-cpu.txt
 CONFIG_PATH="$ROOT/hivemind_exp/configs/mac/grpo-qwen-2.5-0.5b-deepseek-r1.yaml"
 GAME="gsm8k"
-echo -e "${CYAN}${BOLD}[✓] Config file : ${BOLD}$CONFIG_PATH\n${NC}"
+echo -e "${MINT}${BOLD}[✓] Config file : ${BOLD}$CONFIG_PATH\n${NC}"
 
 if [ -n "${HF_TOKEN}" ]; then
     HUGGINGFACE_ACCESS_TOKEN=${HF_TOKEN}
@@ -584,7 +582,7 @@ else
     case $yn in
         [Yy]* ) read -p "Enter your Hugging Face access token: " HUGGINGFACE_ACCESS_TOKEN;;
         [Nn]* ) HUGGINGFACE_ACCESS_TOKEN="None";;
-        * ) echo -e "${YELLOW}>>> No answer was given, so NO models will be pushed to the Hugging Face Hub.${NC}" && HUGGINGFACE_ACCESS_TOKEN="None";;
+        * ) echo -e "${ORANGE}>>> No answer was given, so NO models will be pushed to the Hugging Face Hub.${NC}" && HUGGINGFACE_ACCESS_TOKEN="None";;
     esac
 fi
 
