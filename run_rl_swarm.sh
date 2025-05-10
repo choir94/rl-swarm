@@ -294,26 +294,53 @@ else
     }
 
     install_cloudflared() {
-        if command -v cloudflared >/dev/null 2>&1; then
-            echo -e "${GREEN}${BOLD}[✓] Cloudflared is already installed.${NC}"
-            return 0
-        fi
-        echo -e "\n${ORANGE}${BOLD}[✓] Installing cloudflared...${NC}"
+    # Check if cloudflared is already installed
+    if command -v cloudflared >/dev/null 2>&1; then
+        echo -e "${GREEN}${BOLD}[✓] Cloudflared is already installed.${NC}"
+        return 0
+    fi
+
+    # Determine system architecture if not set
+    if [ -z "$CF_ARCH" ]; then
+        case "$(uname -m)" in
+            x86_64) CF_ARCH="amd64" ;;
+            aarch64) CF_ARCH="arm64" ;;
+            arm*) CF_ARCH="arm" ;;
+            i386) CF_ARCH="386" ;;
+            *) echo -e "${RED}${BOLD}[✗] Unsupported architecture: $(uname -m).${NC}"; return 1 ;;
+        esac
+    fi
+
+    # Attempt to download the specific version
+    CF_VERSION="2025.4.2"
+    CF_URL="https://github.com/cloudflare/cloudflared/releases/download/$CF_VERSION/cloudflared-linux-$CF_ARCH"
+    echo -e "\n${ORANGE}${BOLD}[✓] Trying to download cloudflared version $CF_VERSION for architecture: $CF_ARCH...${NC}"
+    wget -q --show-progress "$CF_URL" -O cloudflared
+    if [ $? -ne 0 ]; then
+        echo -e "${YELLOW}${BOLD}[!] Failed to download version $CF_VERSION. Trying the latest version...${NC}"
+        
+        # Fallback to the latest release if the specific version is not available
         CF_URL="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-$CF_ARCH"
         wget -q --show-progress "$CF_URL" -O cloudflared
         if [ $? -ne 0 ]; then
-            echo -e "${RED}${BOLD}[✗] Failed to download cloudflared.${NC}"
+            echo -e "${RED}${BOLD}[✗] Failed to download the latest version of cloudflared.${NC}"
+            rm -f cloudflared
             return 1
         fi
-        chmod +x cloudflared
-        sudo mv cloudflared /usr/local/bin/
-        if [ $? -ne 0 ]; then
-            echo -e "${RED}${BOLD}[✗] Failed to move cloudflared to /usr/local/bin/.${NC}"
-            return 1
-        fi
-        echo -e "${GREEN}${BOLD}[✓] Cloudflared installed successfully.${NC}"
-        return 0
-    }
+    fi
+
+    # Set executable permissions and move to /usr/local/bin/
+    chmod +x cloudflared
+    sudo mv cloudflared /usr/local/bin/
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}${BOLD}[✗] Failed to move cloudflared to /usr/local/bin/.${NC}"
+        rm -f cloudflared
+        return 1
+    fi
+
+    echo -e "${GREEN}${BOLD}[✓] Cloudflared installed successfully.${NC}"
+    return 0
+}
 
     install_ngrok() {
         if command -v ngrok >/dev/null 2>&1; then
