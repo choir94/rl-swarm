@@ -129,7 +129,7 @@ cat << "EOF"
            JOIN TELEGRAM : https://t.me/airdrop_node
                                                                 
 EOF
-echo -e "\033[0m"  #dat lai mau sau
+echo -e "\033[0m"  
 
 
 sleep 2
